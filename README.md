@@ -1,49 +1,68 @@
 <!-- README.md -->
 
-# Simple OpenVPN Launcher
+# vpn-menu – Simple OpenVPN Launcher
 
-This project provides a small Bash script to manage OpenVPN connections with a simple menu or direct commands.
-It supports starting, stopping, and checking the status of `.ovpn` profiles, including those stored in subfolders, and handles spaces in filenames.
-The script also stores runtime state and PID files in `/run` for clean process management.
+This project provides a small Bash script to manage OpenVPN connections with a simple menu or direct commands.  
+It supports starting, stopping, and checking the status of `.ovpn` profiles, including those stored in subfolders, and handles spaces in filenames.  
+The script stores runtime state and PID files in `/run` for clean process management.
 
 ---
 
-## Features
+## 🚀 Features
 
 - Interactive menu (**start**, **stop**, **status**)
-- Non-interactive CLI usage (`vpn-menu` start "Profile")
+- Non-interactive CLI usage (`vpn-menu start "Profile"`)
 - Supports spaces in profile filenames and directories
 - Tracks runtime with PID and state files under `/run`
 - Auto-elevates with `sudo` if not run as root
 - Designed for **one VPN connection at a time** (safe and predictable)
+- Clean installer and uninstaller scripts
 
 ---
 
-## Requirements
+## ✅ Requirements
 
 - Linux
-- [OpenVPN](https://openvpn.net/) installed and in your PATH
-- Common tools: `bash`, `find`, `xargs`, `pgrep`
-- Root privileges (the script auto re-execs with `sudo`)
+- [OpenVPN](https://openvpn.net/) installed and in your `PATH`
+- Common tools: `bash`, `find`, `xargs`, `pgrep`, `sudo`
+- Root privileges (script re-execs with `sudo` automatically)
 
 ---
 
-## Installation
+## 🛠️ Installation
 
-Clone or download the script, then install it somewhere on your `PATH`:
+Clone or download the repo and run:
+
 ```bash
-sudo install -m 0755 VPN.sh /usr/local/bin/vpn-menu
+chmod +x install-vpn-menu.sh
+./install-vpn-menu.sh
 ```
 
-Now you can run it anywhere with `vpn-menu`.
+This will install `vpn-menu` into `/usr/local/bin`.
 
 ---
 
-## Configuration
+## 🧼 Uninstallation
 
-By default the script looks for `.ovpn` files in `~/VPNs/`.
+To remove everything:
 
-Recommended folder structure:
+```bash
+./uninstall-vpn-menu.sh
+```
+
+You will be asked whether to delete PID/state and log files.
+
+---
+
+## 📁 Configuration
+
+By default, the script looks for `.ovpn` files in:
+
+```bash
+~/VPNs/
+```
+
+### Recommended structure:
 ```
 ~/VPNs/
 ├── Try Hack Me/
@@ -54,63 +73,60 @@ Recommended folder structure:
 
 ---
 
-## Usage
+## ⚙️ Usage
 
-Interactive
+### Interactive
 ```bash
 vpn-menu
 ```
 
-Non-interactive
+### Non-interactive
 ```bash
 vpn-menu start                 # choose from list
-vpn-menu start "Try Hack Me"   # start a specific profile by name (no .ovpn)
+vpn-menu start "Try Hack Me"   # start specific profile (omit .ovpn)
 vpn-menu stop
 vpn-menu status
+vpn-menu -h / --help
 ```
 
 ---
 
-## Behavior
+## 📌 Behavior
 
-- **start:** prompts unless a profile name is supplied
-- **stop:** stops whichever OpenVPN is running (no prompt)
-- **status:** shows the active profile and PID
-
----
-
-## Runtime Files
-
-The script writes state under `/run`:
-- `/run/openvpn-<slug>.pid`
-- `/run/openvpn-<slug>.state` (stores absolute path to the `.ovpn` file)
-These files are cleaned automatically when you stop the VPN.
+- `start`: prompts for a profile unless one is supplied
+- `stop`: stops the currently running OpenVPN instance
+- `status`: shows the active profile and PID
 
 ---
 
-## Troubleshooting
+## 🗂️ Runtime Files
 
-- **No profiles listed:** ensure `.ovpn` files exist under `$VPN_DIR`.
-- **“Another OpenVPN is running”:** stop it first with `vpn-menu stop`.
-- **Permission errors:** run with sudo and check OpenVPN is installed.
-- **Names show as `unknown`:** ensure `.state` files are created (they are written on `start`).
+The script writes temporary state to `/run`:
+- `/run/openvpn-<slug>.pid` — PID of the OpenVPN process
+- `/run/openvpn-<slug>.state` — full path to the profile used
 
----
-
-## Notes
-
-- Only **one OpenVPN instance at a time** is supported.
+These are automatically removed when the VPN is stopped.
 
 ---
 
-## License
+## 🧯 Troubleshooting
 
-- This project is licensed under the MIT License.
-- You are free to use, modify, and distribute this software with proper attribution.
+- **No profiles listed**: ensure `.ovpn` files exist under `$VPN_DIR`
+- **"Another OpenVPN is running"**: use `vpn-menu stop` first
+- **Permission errors**: run with `sudo`, or ensure you installed correctly
+- **`unknown` profile shown**: ensure `.state` file was created correctly
 
 ---
 
-## Upcoming
+## 📄 License
 
-- Adding a help menu
-- Instalation script 
+This project is licensed under the **MIT License**.  
+You are free to use, modify, and distribute this software with proper attribution.
+
+---
+
+## 🧠 Credits
+
+Created for seamless switching between **TryHackMe** and **HackTheBox** or any other VPN labs.
+
+

@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 # --- config ---
 USER_HOME="$(getent passwd "${SUDO_USER:-$USER}" | cut -d: -f6)"
-VPN_DIR="${VPN_DIR_OVERRIDE:-$USER_HOME/VPNs}"   # put THM/HTB .ovpn here
+VPN_DIR="${VPN_DIR_OVERRIDE:-$USER_HOME/VPNs}"
 PIDDIR="/run"
 
 # auto-elevate
@@ -12,11 +12,12 @@ PIDDIR="/run"
 # globals
 VPN_FILE=""; PROFILE=""; PIDFILE=""; LOGFILE=""; STATEFILE=""; PROFILE_NAME=""
 
-die(){ echo "$*" >&2; exit 1; }
+die() { printf '%s\n' "$*" >&2; exit 1; }
 
-profile_name_from_path() { basename "${1%.*}"; }
+profile_name_from_path() {
+  basename "${1%.*}"
+}
 
-# Read argv of a PID safely and extract the .ovpn passed to --config
 vpn_name_from_pid() {
   local pid="$1" prev="" tok file=""
   while IFS= read -r -d '' tok; do
@@ -29,7 +30,6 @@ vpn_name_from_pid() {
   [[ -n "$file" ]] && basename "${file%.*}"
 }
 
-# Given a PID, return profile name; prefer /proc, else map PID->state file
 profile_name_for_pid() {
   local pid="$1" name pf c slug state path
   name="$(vpn_name_from_pid "$pid" || true)"
@@ -60,7 +60,6 @@ _set_paths_from_profile() {
   PROFILE_NAME="$PROFILE"
 }
 
-# Detect running instance using our PID/STATE files, else last openvpn pid
 running_profile() {
   local pf pid slug
   for pf in "$PIDDIR"/openvpn-*.pid; do
@@ -130,7 +129,7 @@ start_vpn() {
   [[ -r "$VPN_FILE" ]] || die "OVPN not readable: $VPN_FILE"
 
   mkdir -p "$PIDDIR"; touch "$LOGFILE" || true
-  printf '%s' "$VPN_FILE" > "$STATEFILE"   # no trailing newline
+  printf '%s' "$VPN_FILE" > "$STATEFILE"
 
   openvpn --writepid "$PIDFILE" --config "$VPN_FILE" --daemon --log "$LOGFILE" >/dev/null 2>&1
   sleep 1
@@ -170,7 +169,29 @@ status_vpn() {
   fi
 }
 
+show_help() {
+  cat <<EOF
 
+Usage: vpn-menu [COMMAND] [PROFILE]
+
+Simple OpenVPN manager.
+
+Commands:
+  start [PROFILE]   Start VPN connection. If no profile is provided, shows menu.
+  stop              Stop currently running VPN.
+  status            Show VPN status.
+  -h, --help        Show this help menu.
+
+VPN profiles must be located under: $VPN_DIR
+
+Examples:
+  vpn-menu start "OVPN_FILENAME"
+  vpn-menu stop
+  vpn-menu status
+  vpn-menu
+
+EOF
+}
 
 menu() {
   echo "Choose: [1] Start  [2] Stop  [3] Status  [q] Quit"
@@ -185,9 +206,14 @@ menu() {
   printf '\n'
 }
 
-case "${1:-}" in
-  start)   start_vpn   "${2-}" ;;
-  stop)    stop_vpn ;;
-  status)  status_vpn ;;
-  *)       menu ;;
-esac
+main() {
+  case "${1:-}" in
+    start)   start_vpn "${2-}" ;;
+    stop)    stop_vpn ;;
+    status)  status_vpn ;;
+    -h|--help) show_help ;;
+    *)       menu ;;
+  esac
+}
+
+main "$@"

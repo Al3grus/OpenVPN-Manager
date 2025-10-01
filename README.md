@@ -1,6 +1,6 @@
 <!-- README.md -->
 
-# vpn-menu – Simple OpenVPN Launcher
+# Simple OpenVPN Launcher (vpn-menu)
 
 This project provides a small Bash script to manage OpenVPN connections with a simple menu or direct commands.  
 It supports starting, stopping, and checking the status of `.ovpn` profiles, including those stored in subfolders, and handles spaces in filenames.  

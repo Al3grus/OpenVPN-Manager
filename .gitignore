@@ -1,0 +1,11 @@
+# Runtime files
+*.pid
+*.state
+*.log
+
+# System files
+.DS_Store
+
+# Backups and temp
+*~
+*.swp

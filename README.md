@@ -34,7 +34,6 @@ The script stores runtime state and PID files in `/run` for clean process manage
 Clone or download the repo and run:
 
 ```bash
-chmod +x install-vpn-menu.sh
 ./install-vpn-menu.sh
 ```
 
